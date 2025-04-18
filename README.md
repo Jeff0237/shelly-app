@@ -127,7 +127,12 @@ node bin/fake-shelly --device SHSW-1 --id ABC123 --port 8086
 
 node bin/fake-shelly --device SHPLG-1 --id DEF456 --port 8087
 
-node bin/fake-shelly --device SHRGBW2 --id GHI789 --port 8088
+node bin/fake-shelly --device SHWT-1 --id GHI789 --port 8088
+
+
+
+// bien mettre le type d'equipement
+//node bin/fake-shelly --device SHRGBW2 --id GHI789 --port 8088
 
 
 const devices = [
@@ -143,6 +148,9 @@ const devices = [
 
 
 node test-toggle.js toggle ABC123
+node test-toggle.js all
+node test-toggle.js status
+node test-toggle.js
 
 
 
@@ -155,6 +163,9 @@ venv\Scripts\activate  # On Windows
 pip install -r requirements.txt
 python main.py
 
+
+cd front
+npm run serve
 
 node bin/fake-shelly --device SHSW-1 --id DOOR1 --port 8081
 node bin/fake-shelly --device SHSW-1 --id DOOR2 --port 8082
