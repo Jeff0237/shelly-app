@@ -9,6 +9,7 @@ const { createDevice } = require('../devices')
 const opts = commandLineArgs([
   { name: 'device', type: String, defaultValue: 'SHSW-1', defaultOption: true },
   { name: 'id', type: String, defaultValue: 'ABC123' },
+  { name: 'port', type: Number, defaultValue: 8080 },
 ])
 
 let device = null
@@ -34,11 +35,12 @@ try {
 console.log('------------------------------')
 console.log('Type:', device.type)
 console.log('ID:', device.id)
+console.log('Port:', opts.port)
 console.log('------------------------------')
 console.log('')
 
 const coapServer = new CoapServer(device)
-const httpServer = new HttpServer(device)
+const httpServer = new HttpServer(device, opts.port)
 
 coapServer.start()
   .then(() => {

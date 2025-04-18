@@ -63,23 +63,22 @@ class Device extends EventEmitter {
     return { G: updates }
   }
 
-  setupHttpRoutes(server) {
+  setupHttpRoutes(app) {
     for (const [path, handler] of this._httpRoutes.entries()) {
-      server.get(path, handler.bind(this))
+      app.get(path, handler.bind(this))
     }
   }
 
-  _handleShellyRequest(req, res, next) {
-    res.send({
+  _handleShellyRequest(req, res) {
+    res.json({
       type: this.type,
       mac: this.macAddress,
       auth: false,
     })
-    next()
   }
 
-  _handleSettingsRequest(req, res, next) {
-    res.send(Object.assign(
+  _handleSettingsRequest(req, res) {
+    res.json(Object.assign(
       {
         device: {
           type: this.type,
@@ -93,15 +92,14 @@ class Device extends EventEmitter {
       },
       this._getHttpSettings()
     ))
-    next()
   }
 
   _getHttpSettings() {
     return {}
   }
 
-  _handleStatusRequest(req, res, next) {
-    res.send(Object.assign(
+  _handleStatusRequest(req, res) {
+    res.json(Object.assign(
       {
         time: new Date().toTimeString().substr(0, 5),
         has_update: false,
@@ -111,7 +109,6 @@ class Device extends EventEmitter {
       },
       this._getHttpStatus()
     ))
-    next()
   }
 
   _getHttpStatus() {

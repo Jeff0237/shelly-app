@@ -1,14 +1,16 @@
 const EventEmitter = require('eventemitter3')
-const restify = require('restify')
+const express = require('express')
 
 const packageJson = require('./package.json')
 
 class HttpServer extends EventEmitter {
-  constructor(device) {
+  constructor(device, port = 8080) {
     super()
 
     this.device = device
     this.server = null
+    this.app = express()
+    this.port = port
   }
 
   start() {
@@ -17,19 +19,14 @@ class HttpServer extends EventEmitter {
     }
 
     return new Promise((resolve, reject) => {
-      const server = this.server = restify.createServer({
-        name: 'Fake Shelly',
-        version: packageJson.version,
-      })
-
-      server.use(restify.plugins.queryParser())
-      server.on('pre', req => {
+      this.app.use((req, res, next) => {
         console.log(req.method, req.url)
+        next()
       })
 
-      this.device.setupHttpRoutes(server)
+      this.device.setupHttpRoutes(this.app)
 
-      server.listen(80, error => {
+      this.server = this.app.listen(this.port, error => {
         if (!error) {
           resolve()
         } else {
