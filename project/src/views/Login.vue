@@ -1,9 +1,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-import { useRouter } from 'vue-router'
 import { useAuthStore } from '../stores/authStore'
 
-const router = useRouter()
 const authStore = useAuthStore()
 
 const email = ref('')
@@ -17,7 +15,7 @@ const handleSubmit = async () => {
     error.value = ''
     isLoading.value = true
     await authStore.login(email.value, password.value)
-    router.push('/dashboard')
+    location.href = '/'
   } catch (e) {
     error.value = e instanceof Error ? e.message : 'Failed to login'
   } finally {
