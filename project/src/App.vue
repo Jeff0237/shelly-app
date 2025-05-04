@@ -2,9 +2,8 @@
 import { onMounted } from 'vue'
 import { useAuthStore } from './stores/authStore'
 import { useSensorStore } from './stores/sensorStore'
-import AppNav from './components/AppNav.vue'
+import AppNav from './components/layout/AppNav.vue'
 import AppHeader from './components/layout/AppHeader.vue'
-// import AppHeader from './components/AppHeader.vue'
 import AppFooter from './components/layout/AppFooter.vue'
 
 const authStore = useAuthStore()
