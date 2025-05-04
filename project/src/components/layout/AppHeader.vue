@@ -4,7 +4,7 @@ import { useSensorStore } from '../../stores/sensorStore'
 import { useAuthStore } from '../../stores/authStore'
 import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
-import LanguageSelector from '../LanguageSelector.vue'
+import AppNav from './AppNav.vue'
 
 const sensorStore = useSensorStore()
 const authStore = useAuthStore()
@@ -83,6 +83,11 @@ const handleLogout = async () => {
           </div>
         </div>
       </div>
+
+      <div class="relative">
+        sss
+        <AppNav v-if="authStore.isAuthenticated" />
+      </div>
     </div>
   </header>
 </template>
@@ -99,6 +104,14 @@ const handleLogout = async () => {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  position: relative;
+}
+
+.relative {
+  position: relative;
+  background: #000;
+  z-index: 20000;
+  width: 400px;
   padding-right: 4rem;
 }
 

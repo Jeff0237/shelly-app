@@ -1,15 +1,22 @@
 <script setup lang="ts">
 import { useLanguageStore } from '../stores/languageStore'
+import {computed, useAttrs} from "vue";
 
+const attrs = useAttrs();
 const languageStore = useLanguageStore()
+
+const selectClass = computed(() => {
+  return attrs.class || ''
+})
 </script>
 
 <template>
-  <div class="language-selector">
+  <div class="language-selector"
+  >
     <select
+      :class="['language-select', selectClass]"
       :value="languageStore.currentLanguage"
       @change="(e) => languageStore.setLanguage((e.target as HTMLSelectElement).value)"
-      class="language-select"
     >
       <option
         v-for="lang in languageStore.availableLanguages"
@@ -23,8 +30,16 @@ const languageStore = useLanguageStore()
 </template>
 
 <style scoped>
+.w-full {
+  width: 100%;
+}
+
 .language-selector {
   display: flex;
+  align-items: center;
+}
+.language-selector.inline-flex {
+  display: inline-flex;
   align-items: center;
 }
 
@@ -65,4 +80,4 @@ const languageStore = useLanguageStore()
     box-shadow: 0 0 0 2px var(--color-primary-dark);
   }
 }
-</style> 
+</style>

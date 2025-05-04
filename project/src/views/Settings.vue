@@ -1,5 +1,7 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue'
+import {useI18n} from "vue-i18n";
+const { t } = useI18n()
 
 interface SettingsState {
   darkMode: 'auto' | 'light' | 'dark'
@@ -72,7 +74,7 @@ const resetToDefaults = () => {
 
 <template>
   <div class="settings-view">
-    <h1>Settings</h1>
+    <h1>{{ t('settings.title') }}</h1>
     
     <div class="settings-container">
       <div class="setting-group">

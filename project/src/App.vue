@@ -2,7 +2,6 @@
 import { onMounted } from 'vue'
 import { useAuthStore } from './stores/authStore'
 import { useSensorStore } from './stores/sensorStore'
-import AppNav from './components/layout/AppNav.vue'
 import AppHeader from './components/layout/AppHeader.vue'
 import AppFooter from './components/layout/AppFooter.vue'
 
@@ -43,7 +42,6 @@ onMounted(() => {
 <template>
   <div class="app">
     <AppHeader v-if="authStore.isAuthenticated" />
-    <AppNav v-if="authStore.isAuthenticated" />
     <main class="main-content" :class="{ 'with-nav': authStore.isAuthenticated }">
       <RouterView />
     </main>

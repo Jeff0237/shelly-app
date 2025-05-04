@@ -10,6 +10,12 @@ const currentYear = new Date().getFullYear()
   <footer class="app-footer">
     <div class="footer-content">
       <div class="footer-left">
+        <div class="language-section">
+          <span>
+            {{ t('common.choose_language')}} :
+          </span>
+          <LanguageSelector class="inline-flex" />
+        </div>
         <p class="copyright">
           {{ t('footer.copyright', { year: currentYear }) }}
         </p>
@@ -19,7 +25,6 @@ const currentYear = new Date().getFullYear()
         <a href="#" class="footer-link">{{ t('footer.termsOfService') }}</a>
         <a href="#" class="footer-link">{{ t('footer.contactSupport') }}</a>
       </div>
-      <LanguageSelector />
     </div>
   </footer>
 </template>
@@ -38,7 +43,7 @@ const currentYear = new Date().getFullYear()
   padding: 0 var(--space-4);
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  align-items: end;
 }
 
 .copyright {
@@ -68,6 +73,7 @@ const currentYear = new Date().getFullYear()
     flex-direction: column;
     gap: var(--space-4);
     text-align: center;
+    align-items: center !important;
   }
 
   .footer-right {
@@ -91,4 +97,4 @@ const currentYear = new Date().getFullYear()
     color: var(--color-primary-light);
   }
 }
-</style> 
+</style>

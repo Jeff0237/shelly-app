@@ -65,6 +65,24 @@ button:focus-visible {
   text-align: center;
 }
 
+.w-full {
+  width: 100% !important;
+  background: #000;
+}
+
+.inline-block {
+  display: inline-block;
+}
+
+.inline-flex {
+  display: inline-flex;
+}
+
+.flex {
+  display: flex;
+  flex-direction: row;
+}
+
 @media (prefers-color-scheme: light) {
   :root {
     color: #213547;

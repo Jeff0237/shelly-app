@@ -15,6 +15,7 @@ export default {
     noResults: 'Keine Ergebnisse gefunden',
     required: 'Erforderlich',
     optional: 'Optional',
+    choose_language: 'Sprache wählen',
   },
   auth: {
     login: 'Anmelden',
