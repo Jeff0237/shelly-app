@@ -41,7 +41,11 @@ const handleLogout = () => {
   <header class="app-header">
     <div class="container header-container">
       <div class="header-left">
-        <h1 class="site-title">Lab Security</h1>
+        <RouterLink to="/">
+          <h1 class="app-title">
+            Shelly App
+          </h1>
+        </RouterLink>
       </div>
       
       <div class="header-center">
@@ -53,13 +57,22 @@ const handleLogout = () => {
       
       <div class="header-right">
         <div v-if="authStore.isAuthenticated" class="user-section">
-          <div class="time-info">
-            <div class="current-time">{{ formattedTime }}</div>
-            <div class="current-date">{{ formattedDate }}</div>
-          </div>
           <div class="user-info">
-            <span class="user-name">{{ authStore.user?.name }}</span>
-            <button class="logout-button" @click="handleLogout">Logout</button>
+            <div class="flex-column">
+              <div class="time-info">
+                <div class="current-time">{{ formattedTime }}</div>
+                <div class="current-date">{{ formattedDate }}</div>
+              </div>
+              <span class="user-name">{{ authStore.user?.email }}</span>
+            </div>
+            <button class="logout-button" v-show="false" @click="handleLogout">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                <polyline points="16 17 21 12 16 7"></polyline>
+                <line x1="21" y1="12" x2="9" y2="12"></line>
+              </svg>
+              Logout
+            </button>
           </div>
         </div>
       </div>
@@ -79,10 +92,12 @@ const handleLogout = () => {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  padding-right: 4rem;
 }
 
-.site-title {
+.app-title {
   font-size: 1.5rem;
+  color: var(--color-primary);
   margin: 0;
   font-weight: 700;
 }
@@ -120,7 +135,10 @@ const handleLogout = () => {
 }
 
 .time-info {
-  text-align: right;
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  justify-content: end;
 }
 
 .current-time {
@@ -139,22 +157,34 @@ const handleLogout = () => {
   gap: var(--space-3);
 }
 
+.flex-column {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.35rem;
+}
+
 .user-name {
   font-weight: 500;
   color: var(--color-neutral-700);
 }
 
 .logout-button {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
   padding: var(--space-2) var(--space-3);
-  background-color: var(--color-neutral-200);
-  color: var(--color-neutral-700);
+  background: var(--color-error-light);
+  color: white;
+  border: none;
   border-radius: var(--radius);
-  font-weight: 500;
+  font-size: 0.875rem;
+  cursor: pointer;
   transition: all var(--transition-base);
 }
 
 .logout-button:hover {
-  background-color: var(--color-neutral-300);
+  background: var(--color-error);
+  color: white;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -174,12 +204,12 @@ const handleLogout = () => {
   .user-name {
     color: var(--color-neutral-300);
   }
-  
+
   .logout-button {
     background-color: var(--color-neutral-700);
     color: var(--color-neutral-300);
   }
-  
+
   .logout-button:hover {
     background-color: var(--color-neutral-600);
   }

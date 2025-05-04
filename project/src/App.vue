@@ -1,19 +1,20 @@
 <script setup lang="ts">
 import { onMounted } from 'vue'
-import { useSensorStore } from './stores/sensorStore'
 import { useAuthStore } from './stores/authStore'
+import { useSensorStore } from './stores/sensorStore'
+import AppNav from './components/AppNav.vue'
 import AppHeader from './components/layout/AppHeader.vue'
+// import AppHeader from './components/AppHeader.vue'
 import AppFooter from './components/layout/AppFooter.vue'
-import { onBeforeRouteUpdate } from "vue-router"
 
-const sensorStore = useSensorStore()
 const authStore = useAuthStore()
+const sensorStore = useSensorStore()
 
 onMounted(() => {
-  // Initialize auth state
+  // Initialize auth state from localStorage
   authStore.initialize()
   
-  // Only load sensors if authenticated
+  // Load sensors if authenticated
   if (authStore.isAuthenticated) {
     sensorStore.loadSensors()
     
@@ -38,18 +39,13 @@ onMounted(() => {
     setTimeout(simulateUpdates, 3000)
   }
 })
-
-onBeforeRouteUpdate(async (to, from) => {
-  console.log('Route changes')
-  console.log(to)
-  console.log(from)
-})
 </script>
 
 <template>
-  <div class="app-container">
-    <AppHeader />
-    <main>
+  <div class="app">
+    <AppHeader v-if="authStore.isAuthenticated" />
+    <AppNav v-if="authStore.isAuthenticated" />
+    <main class="main-content" :class="{ 'with-nav': authStore.isAuthenticated }">
       <RouterView />
     </main>
     <AppFooter v-if="authStore.isAuthenticated" />
@@ -57,20 +53,25 @@ onBeforeRouteUpdate(async (to, from) => {
 </template>
 
 <style scoped>
-.app-container {
+.app-container, .app {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
 }
 
-main {
+.main-content {
   flex: 1;
   padding: var(--space-4);
 }
 
-@media (min-width: 768px) {
-  main {
-    padding: var(--space-6);
+.main-content.with-nav {
+  padding-top: calc(var(--space-4) * 2 + 24px);
+}
+
+@media (prefers-color-scheme: dark) {
+  .app {
+    background-color: var(--color-neutral-900);
+    color: var(--color-neutral-100);
   }
 }
 </style>

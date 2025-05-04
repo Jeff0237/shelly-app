@@ -1,36 +1,19 @@
 <script setup lang="ts">
-
 const currentYear = new Date().getFullYear()
-
-const navItems = [
-  { label: 'Dashboard', route: 'dashboard', exact: true },
-  { label: 'Floor Plan', route: 'floor-plan' },
-  { label: 'Activity', route: 'activities' },
-  { label: 'Settings', route: 'settings' }
-]
 </script>
 
 <template>
   <footer class="app-footer">
-    <div class="container">
-      <nav class="footer-nav">
-        <ul class="nav-list">
-          <li v-for="item in navItems" :key="item.label">
-            <RouterLink 
-              :to="{name: item.route}" 
-              class="nav-link"
-              activeClass=""
-              exactActiveClass="router-link-active router-link-exact-active"
-              :exact="item.exact"
-            >
-              {{ item.label }}
-            </RouterLink>
-          </li>
-        </ul>
-      </nav>
-      
-      <div class="footer-info">
-        <p>&copy; {{ currentYear }} Laboratory Security System</p>
+    <div class="footer-content">
+      <div class="footer-left">
+        <p class="copyright">
+          © {{ currentYear }} Shelly App. All rights reserved.
+        </p>
+      </div>
+      <div class="footer-right">
+        <a href="#" class="footer-link">Privacy Policy</a>
+        <a href="#" class="footer-link">Terms of Service</a>
+        <a href="#" class="footer-link">Contact Support</a>
       </div>
     </div>
   </footer>
@@ -38,60 +21,69 @@ const navItems = [
 
 <style scoped>
 .app-footer {
-  background-color: var(--color-neutral-100);
+  background: white;
   border-top: 1px solid var(--color-neutral-200);
   padding: var(--space-4) 0;
   margin-top: auto;
 }
 
-.footer-nav {
-  margin-bottom: var(--space-4);
-}
-
-.nav-list {
+.footer-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 var(--space-4);
   display: flex;
-  justify-content: center;
-  gap: var(--space-6);
-  list-style: none;
+  justify-content: space-between;
+  align-items: center;
 }
 
-.nav-link {
-  color: var(--color-neutral-700);
+.copyright {
+  color: var(--color-neutral-600);
+  font-size: 0.875rem;
+  margin: 0;
+}
+
+.footer-right {
+  display: flex;
+  gap: var(--space-4);
+}
+
+.footer-link {
+  color: var(--color-neutral-600);
   text-decoration: none;
-  font-weight: 500;
+  font-size: 0.875rem;
   transition: color var(--transition-base);
 }
 
-.nav-link:hover,
-.nav-link.router-link-active {
+.footer-link:hover {
   color: var(--color-primary);
 }
 
-.footer-info {
-  text-align: center;
-  color: var(--color-neutral-600);
-  font-size: 0.875rem;
+@media (max-width: 768px) {
+  .footer-content {
+    flex-direction: column;
+    gap: var(--space-4);
+    text-align: center;
+  }
+
+  .footer-right {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
 }
 
 @media (prefers-color-scheme: dark) {
   .app-footer {
-    background-color: var(--color-neutral-800);
+    background: var(--color-neutral-800);
     border-top-color: var(--color-neutral-700);
   }
-  
-  .nav-link {
+
+  .copyright,
+  .footer-link {
     color: var(--color-neutral-400);
   }
-  
-  .footer-info {
-    color: var(--color-neutral-500);
-  }
-}
 
-@media (max-width: 640px) {
-  .nav-list {
-    flex-wrap: wrap;
-    gap: var(--space-3);
+  .footer-link:hover {
+    color: var(--color-primary-light);
   }
 }
-</style>
+</style> 
