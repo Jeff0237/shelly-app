@@ -1,8 +1,13 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
 import { useSensorStore } from '../../stores/sensorStore'
+import { useAuthStore } from '../../stores/authStore'
+import { useRouter } from 'vue-router'
 
 const sensorStore = useSensorStore()
+const authStore = useAuthStore()
+const router = useRouter()
+
 const currentTime = ref(new Date())
 
 // Update time every minute
@@ -25,6 +30,11 @@ const securityStatus = computed(() => {
     return { status: 'alert', text: `${sensorStore.openSensors.length} Open`, color: 'var(--color-error)' }
   }
 })
+
+const handleLogout = () => {
+  authStore.logout()
+  router.push('/login')
+}
 </script>
 
 <template>
@@ -35,16 +45,22 @@ const securityStatus = computed(() => {
       </div>
       
       <div class="header-center">
-        <div class="security-status" :class="{ 'alert': securityStatus.status === 'alert' }">
+        <div v-if="authStore.isAuthenticated" class="security-status" :class="{ 'alert': securityStatus.status === 'alert' }">
           <div class="status-indicator" :style="{ backgroundColor: securityStatus.color }"></div>
           <span class="status-text">{{ securityStatus.text }}</span>
         </div>
       </div>
       
       <div class="header-right">
-        <div class="time-info">
-          <div class="current-time">{{ formattedTime }}</div>
-          <div class="current-date">{{ formattedDate }}</div>
+        <div v-if="authStore.isAuthenticated" class="user-section">
+          <div class="time-info">
+            <div class="current-time">{{ formattedTime }}</div>
+            <div class="current-date">{{ formattedDate }}</div>
+          </div>
+          <div class="user-info">
+            <span class="user-name">{{ authStore.user?.name }}</span>
+            <button class="logout-button" @click="handleLogout">Logout</button>
+          </div>
         </div>
       </div>
     </div>
@@ -97,6 +113,12 @@ const securityStatus = computed(() => {
   font-weight: 600;
 }
 
+.user-section {
+  display: flex;
+  align-items: center;
+  gap: var(--space-6);
+}
+
 .time-info {
   text-align: right;
 }
@@ -109,6 +131,30 @@ const securityStatus = computed(() => {
 .current-date {
   font-size: 0.875rem;
   color: var(--color-neutral-600);
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.user-name {
+  font-weight: 500;
+  color: var(--color-neutral-700);
+}
+
+.logout-button {
+  padding: var(--space-2) var(--space-3);
+  background-color: var(--color-neutral-200);
+  color: var(--color-neutral-700);
+  border-radius: var(--radius);
+  font-weight: 500;
+  transition: all var(--transition-base);
+}
+
+.logout-button:hover {
+  background-color: var(--color-neutral-300);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -124,6 +170,19 @@ const securityStatus = computed(() => {
   .current-date {
     color: var(--color-neutral-400);
   }
+  
+  .user-name {
+    color: var(--color-neutral-300);
+  }
+  
+  .logout-button {
+    background-color: var(--color-neutral-700);
+    color: var(--color-neutral-300);
+  }
+  
+  .logout-button:hover {
+    background-color: var(--color-neutral-600);
+  }
 }
 
 @media (max-width: 768px) {
@@ -132,8 +191,18 @@ const securityStatus = computed(() => {
     gap: var(--space-3);
   }
   
+  .user-section {
+    flex-direction: column;
+    gap: var(--space-3);
+  }
+  
   .time-info {
     text-align: center;
+  }
+  
+  .user-info {
+    flex-direction: column;
+    gap: var(--space-2);
   }
 }
 </style>

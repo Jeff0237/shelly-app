@@ -1,34 +1,42 @@
 <script setup lang="ts">
 import { onMounted } from 'vue'
 import { useSensorStore } from './stores/sensorStore'
+import { useAuthStore } from './stores/authStore'
 import AppHeader from './components/layout/AppHeader.vue'
 import AppFooter from './components/layout/AppFooter.vue'
-import {onBeforeRouteUpdate} from "vue-router";
+import { onBeforeRouteUpdate } from "vue-router"
 
 const sensorStore = useSensorStore()
+const authStore = useAuthStore()
 
 onMounted(() => {
-  sensorStore.loadSensors()
+  // Initialize auth state
+  authStore.initialize()
   
-  // In a real application, we would connect to the MQTT broker here
-  // Instead, we'll simulate random sensor updates
-  const simulateUpdates = () => {
-    const randomSensorId = Math.floor(Math.random() * sensorStore.sensors.length)
-    const sensor = sensorStore.sensors[randomSensorId]
-    if (sensor) {
-      sensorStore.updateSensorStatus(sensor.id, {
-        isOpen: Math.random() > 0.7, // 30% chance of being open
-        battery: Math.max(sensor.battery - Math.random() * 0.1, 0),
-        lastUpdate: new Date().toISOString()
-      })
+  // Only load sensors if authenticated
+  if (authStore.isAuthenticated) {
+    sensorStore.loadSensors()
+    
+    // In a real application, we would connect to the MQTT broker here
+    // Instead, we'll simulate random sensor updates
+    const simulateUpdates = () => {
+      const randomSensorId = Math.floor(Math.random() * sensorStore.sensors.length)
+      const sensor = sensorStore.sensors[randomSensorId]
+      if (sensor) {
+        sensorStore.updateSensorStatus(sensor.id, {
+          isOpen: Math.random() > 0.7, // 30% chance of being open
+          battery: Math.max(sensor.battery - Math.random() * 0.1, 0),
+          lastUpdate: new Date().toISOString()
+        })
+      }
+      
+      // Schedule next update
+      setTimeout(simulateUpdates, Math.random() * 10000 + 5000) // Between 5-15 seconds
     }
     
-    // Schedule next update
-    setTimeout(simulateUpdates, Math.random() * 10000 + 5000) // Between 5-15 seconds
+    // Start simulation after 3 seconds
+    setTimeout(simulateUpdates, 3000)
   }
-  
-  // Start simulation after 3 seconds
-  setTimeout(simulateUpdates, 3000)
 })
 
 onBeforeRouteUpdate(async (to, from) => {
@@ -44,7 +52,7 @@ onBeforeRouteUpdate(async (to, from) => {
     <main>
       <RouterView />
     </main>
-    <AppFooter />
+    <AppFooter v-if="authStore.isAuthenticated" />
   </div>
 </template>
 
