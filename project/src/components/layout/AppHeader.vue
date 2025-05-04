@@ -3,10 +3,13 @@ import { ref, computed } from 'vue'
 import { useSensorStore } from '../../stores/sensorStore'
 import { useAuthStore } from '../../stores/authStore'
 import { useRouter } from 'vue-router'
+import { useI18n } from 'vue-i18n'
+import LanguageSelector from '../LanguageSelector.vue'
 
 const sensorStore = useSensorStore()
 const authStore = useAuthStore()
 const router = useRouter()
+const { t } = useI18n()
 
 const currentTime = ref(new Date())
 
@@ -31,9 +34,13 @@ const securityStatus = computed(() => {
   }
 })
 
-const handleLogout = () => {
-  authStore.logout()
-  router.push('/login')
+const handleLogout = async () => {
+  try {
+    await authStore.logout()
+    router.push('/login')
+  } catch (error) {
+    console.error('Logout failed:', error)
+  }
 }
 </script>
 
@@ -43,7 +50,7 @@ const handleLogout = () => {
       <div class="header-left">
         <RouterLink to="/">
           <h1 class="app-title">
-            Shelly App
+            {{ t('common.appName') }}
           </h1>
         </RouterLink>
       </div>
@@ -71,7 +78,7 @@ const handleLogout = () => {
                 <polyline points="16 17 21 12 16 7"></polyline>
                 <line x1="21" y1="12" x2="9" y2="12"></line>
               </svg>
-              Logout
+              {{ t('auth.logout') }}
             </button>
           </div>
         </div>

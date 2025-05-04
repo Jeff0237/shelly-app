@@ -1,4 +1,8 @@
 <script setup lang="ts">
+import { useI18n } from 'vue-i18n'
+import LanguageSelector from "../LanguageSelector.vue";
+
+const { t } = useI18n()
 const currentYear = new Date().getFullYear()
 </script>
 
@@ -7,14 +11,15 @@ const currentYear = new Date().getFullYear()
     <div class="footer-content">
       <div class="footer-left">
         <p class="copyright">
-          © {{ currentYear }} Shelly App. All rights reserved.
+          {{ t('footer.copyright', { year: currentYear }) }}
         </p>
       </div>
       <div class="footer-right">
-        <a href="#" class="footer-link">Privacy Policy</a>
-        <a href="#" class="footer-link">Terms of Service</a>
-        <a href="#" class="footer-link">Contact Support</a>
+        <a href="#" class="footer-link">{{ t('footer.privacyPolicy') }}</a>
+        <a href="#" class="footer-link">{{ t('footer.termsOfService') }}</a>
+        <a href="#" class="footer-link">{{ t('footer.contactSupport') }}</a>
       </div>
+      <LanguageSelector />
     </div>
   </footer>
 </template>
