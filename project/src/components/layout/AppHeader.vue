@@ -1,8 +1,16 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
 import { useSensorStore } from '../../stores/sensorStore'
+import { useAuthStore } from '../../stores/authStore'
+import { useRouter } from 'vue-router'
+import { useI18n } from 'vue-i18n'
+import AppNav from './AppNav.vue'
 
 const sensorStore = useSensorStore()
+const authStore = useAuthStore()
+const router = useRouter()
+const { t } = useI18n()
+
 const currentTime = ref(new Date())
 
 // Update time every minute
@@ -25,31 +33,80 @@ const securityStatus = computed(() => {
     return { status: 'alert', text: `${sensorStore.openSensors.length} Open`, color: 'var(--color-error)' }
   }
 })
+
+const handleLogout = async () => {
+  try {
+    await authStore.logout()
+    router.push('/login')
+  } catch (error) {
+    console.error('Logout failed:', error)
+  }
+}
 </script>
 
 <template>
   <header class="app-header">
     <div class="container header-container">
       <div class="header-left">
-        <h1 class="site-title">Lab Security</h1>
+        <RouterLink to="/">
+          <h1 class="app-title">
+            {{ t('common.appName') }}
+          </h1>
+        </RouterLink>
       </div>
       
       <div class="header-center">
-        <div class="security-status" :class="{ 'alert': securityStatus.status === 'alert' }">
+        <div v-if="authStore.isAuthenticated" class="security-status" :class="{ 'alert': securityStatus.status === 'alert' }">
           <div class="status-indicator" :style="{ backgroundColor: securityStatus.color }"></div>
           <span class="status-text">{{ securityStatus.text }}</span>
         </div>
       </div>
       
       <div class="header-right">
-        <div class="time-info">
-          <div class="current-time">{{ formattedTime }}</div>
-          <div class="current-date">{{ formattedDate }}</div>
+        <div v-if="authStore.isAuthenticated" class="user-section">
+          <div class="user-info">
+            <div class="flex-column">
+              <div class="time-info">
+                <div class="current-time">{{ formattedTime }}</div>
+                <div class="current-date">{{ formattedDate }}</div>
+              </div>
+              <span class="user-name">{{ authStore.user?.email }}</span>
+            </div>
+            <button class="logout-button" v-show="false" @click="handleLogout">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                <polyline points="16 17 21 12 16 7"></polyline>
+                <line x1="21" y1="12" x2="9" y2="12"></line>
+              </svg>
+              {{ t('auth.logout') }}
+            </button>
+          </div>
+        </div>
+
+        <div class="relative">
+          <AppNav v-if="authStore.isAuthenticated" />
         </div>
       </div>
     </div>
   </header>
 </template>
+
+<style>
+.app {
+  padding-top: 3rem;
+}
+
+.main-content {
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+
+@media (max-width: 768px) {
+  .app {
+    padding-top: 7rem !important;
+  }
+}
+</style>
 
 <style scoped>
 .app-header {
@@ -57,16 +114,33 @@ const securityStatus = computed(() => {
   border-bottom: 1px solid var(--color-neutral-200);
   padding: var(--space-4) 0;
   box-shadow: var(--shadow-sm);
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
 }
 
 .header-container {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  position: relative;
 }
 
-.site-title {
+.header-right {
+  display: flex;
+  justify-content: space-between;
+}
+
+.relative {
+  margin-left: 3rem;
+  position: relative;
+}
+
+.app-title {
   font-size: 1.5rem;
+  color: var(--color-primary);
   margin: 0;
   font-weight: 700;
 }
@@ -97,8 +171,17 @@ const securityStatus = computed(() => {
   font-weight: 600;
 }
 
+.user-section {
+  display: flex;
+  align-items: center;
+  gap: var(--space-6);
+}
+
 .time-info {
-  text-align: right;
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  justify-content: end;
 }
 
 .current-time {
@@ -109,6 +192,42 @@ const securityStatus = computed(() => {
 .current-date {
   font-size: 0.875rem;
   color: var(--color-neutral-600);
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.flex-column {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.35rem;
+}
+
+.user-name {
+  font-weight: 500;
+  color: var(--color-neutral-700);
+}
+
+.logout-button {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-3);
+  background: var(--color-error-light);
+  color: white;
+  border: none;
+  border-radius: var(--radius);
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: all var(--transition-base);
+}
+
+.logout-button:hover {
+  background: var(--color-error);
+  color: white;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -124,6 +243,19 @@ const securityStatus = computed(() => {
   .current-date {
     color: var(--color-neutral-400);
   }
+  
+  .user-name {
+    color: var(--color-neutral-300);
+  }
+
+  .logout-button {
+    background-color: var(--color-neutral-700);
+    color: var(--color-neutral-300);
+  }
+
+  .logout-button:hover {
+    background-color: var(--color-neutral-600);
+  }
 }
 
 @media (max-width: 768px) {
@@ -132,8 +264,24 @@ const securityStatus = computed(() => {
     gap: var(--space-3);
   }
   
+  .relative {
+    width: 100%;
+    padding-right: 0 !important;
+    margin-left: 0 !important;
+  }
+  
+  .user-section {
+    flex-direction: column;
+    gap: var(--space-3);
+  }
+  
   .time-info {
-    text-align: center;
+    justify-content: center;
+  }
+  
+  .user-info {
+    flex-direction: column;
+    gap: var(--space-2);
   }
 }
 </style>
