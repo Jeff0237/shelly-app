@@ -1,23 +1,58 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '../stores/authStore'
 
 const router = useRouter()
 const authStore = useAuthStore()
 
-const email = ref('')
+const otp = ref('')
 const error = ref('')
 const isLoading = ref(false)
+
+onMounted(() => {
+  // Redirect if no email is stored
+  if (!authStore.resetEmail) {
+    router.push('/forgot-password')
+  }
+})
 
 const handleSubmit = async () => {
   try {
     error.value = ''
     isLoading.value = true
-    await authStore.requestPasswordReset(email.value)
-    router.push('/verify-otp')
+    
+    if (!authStore.resetEmail) {
+      throw new Error('No email found. Please request a new OTP.')
+    }
+    
+    const resetToken = await authStore.verifyOTP(authStore.resetEmail, otp.value)
+    
+    // Redirect to reset password page with the token
+    router.push({
+      name: 'reset-password',
+      query: { token: resetToken }
+    })
   } catch (e) {
-    error.value = e instanceof Error ? e.message : 'Failed to request password reset'
+    error.value = e instanceof Error ? e.message : 'Failed to verify OTP'
+  } finally {
+    isLoading.value = false
+  }
+}
+
+const handleResendOTP = async () => {
+  try {
+    error.value = ''
+    isLoading.value = true
+    
+    if (!authStore.resetEmail) {
+      throw new Error('No email found. Please request a new OTP.')
+    }
+    
+    await authStore.requestPasswordReset(authStore.resetEmail)
+    error.value = 'New OTP has been sent to your email'
+  } catch (e) {
+    error.value = e instanceof Error ? e.message : 'Failed to resend OTP'
   } finally {
     isLoading.value = false
   }
@@ -27,7 +62,7 @@ const handleSubmit = async () => {
 <template>
   <div class="auth-page">
     <div class="auth-container">
-      <h1>Reset Password</h1>
+      <h1>Verify OTP</h1>
       
       <form @submit.prevent="handleSubmit" class="auth-form">
         <div v-if="error" class="error-message">
@@ -35,15 +70,18 @@ const handleSubmit = async () => {
         </div>
         
         <div class="form-group">
-          <label for="email">Email</label>
+          <label for="otp">Enter OTP</label>
           <input
-            id="email"
-            v-model="email"
-            type="email"
+            id="otp"
+            v-model="otp"
+            type="text"
             required
-            placeholder="Enter your email"
+            placeholder="Enter 6-digit OTP"
             class="form-input"
+            maxlength="6"
+            pattern="\d{6}"
           />
+          <small class="form-help">Enter the 6-digit code sent to your email</small>
         </div>
         
         <button 
@@ -51,7 +89,16 @@ const handleSubmit = async () => {
           class="submit-button"
           :disabled="isLoading"
         >
-          {{ isLoading ? 'Sending...' : 'Send OTP' }}
+          {{ isLoading ? 'Verifying...' : 'Verify OTP' }}
+        </button>
+        
+        <button 
+          type="button" 
+          class="resend-button"
+          @click="handleResendOTP"
+          :disabled="isLoading"
+        >
+          Resend OTP
         </button>
       </form>
       
@@ -114,6 +161,11 @@ h1 {
   border-color: var(--color-primary);
 }
 
+.form-help {
+  color: var(--color-neutral-600);
+  font-size: 0.875rem;
+}
+
 .submit-button {
   background-color: var(--color-primary);
   color: white;
@@ -129,6 +181,26 @@ h1 {
 }
 
 .submit-button:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.resend-button {
+  background-color: transparent;
+  color: var(--color-primary);
+  padding: var(--space-3);
+  border-radius: var(--radius);
+  font-weight: 500;
+  cursor: pointer;
+  transition: all var(--transition-base);
+  border: 1px solid var(--color-primary);
+}
+
+.resend-button:hover:not(:disabled) {
+  background-color: var(--color-primary-light);
+}
+
+.resend-button:disabled {
   opacity: 0.7;
   cursor: not-allowed;
 }
@@ -169,6 +241,10 @@ h1 {
   
   .form-input:focus {
     border-color: var(--color-primary);
+  }
+  
+  .form-help {
+    color: var(--color-neutral-400);
   }
 }
 </style> 

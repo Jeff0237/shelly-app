@@ -10,6 +10,7 @@ interface User {
 export const useAuthStore = defineStore('auth', () => {
   const user = ref<User | null>(null)
   const token = ref<string | null>(null)
+  const resetEmail = ref<string | null>(null)
 
   const isAuthenticated = computed(() => !!token.value)
 
@@ -83,9 +84,36 @@ export const useAuthStore = defineStore('auth', () => {
       throw new Error('Email is required')
     }
     
-    // In a real app, this would send an email with a reset link
-    // For demo purposes, we'll just simulate success
-    console.log('Password reset requested for:', email)
+    // In a real app, this would:
+    // 1. Check if email exists in the database
+    // 2. Generate and store OTP
+    // 3. Send OTP via email
+    
+    // For demo purposes, we'll just store the email and simulate success
+    resetEmail.value = email
+    return true
+  }
+
+  const verifyOTP = async (email: string, otp: string) => {
+    // Simulate API call
+    await new Promise(resolve => setTimeout(resolve, 1000))
+    
+    if (!email || !otp) {
+      throw new Error('Email and OTP are required')
+    }
+    
+    // In a real app, this would:
+    // 1. Verify the OTP matches what was sent
+    // 2. Check if OTP is still valid (not expired)
+    // 3. Generate a reset token
+    
+    // For demo purposes, we'll accept any 6-digit OTP
+    if (otp.length !== 6 || !/^\d+$/.test(otp)) {
+      throw new Error('Invalid OTP format')
+    }
+    
+    // Generate a reset token
+    return 'reset-token-' + Math.random().toString(36).substr(2, 9)
   }
 
   const resetPassword = async (resetToken: string, newPassword: string) => {
@@ -96,20 +124,27 @@ export const useAuthStore = defineStore('auth', () => {
       throw new Error('Invalid reset data')
     }
     
-    // In a real app, this would validate the token and update the password
+    // In a real app, this would:
+    // 1. Validate the reset token
+    // 2. Update the user's password
+    // 3. Invalidate the reset token
+    
     // For demo purposes, we'll just simulate success
     console.log('Password reset with token:', resetToken)
+    resetEmail.value = null
   }
 
   return {
     user,
     token,
+    resetEmail,
     isAuthenticated,
     login,
     register,
     logout,
     initialize,
     requestPasswordReset,
+    verifyOTP,
     resetPassword
   }
 }) 
