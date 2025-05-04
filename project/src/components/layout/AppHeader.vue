@@ -91,6 +91,23 @@ const handleLogout = async () => {
   </header>
 </template>
 
+<style>
+.app {
+  padding-top: 3rem;
+}
+
+.main-content {
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+
+@media (max-width: 768px) {
+  .app {
+    padding-top: 7rem !important;
+  }
+}
+</style>
+
 <style scoped>
 .app-header {
   background-color: var(--color-neutral-100);
@@ -249,7 +266,8 @@ const handleLogout = async () => {
   
   .relative {
     width: 100%;
-    padding-right: 0;
+    padding-right: 0 !important;
+    margin-left: 0 !important;
   }
   
   .user-section {
@@ -258,7 +276,7 @@ const handleLogout = async () => {
   }
   
   .time-info {
-    text-align: center;
+    justify-content: center;
   }
   
   .user-info {

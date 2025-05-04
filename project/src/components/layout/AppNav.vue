@@ -4,6 +4,7 @@ import { useRouter } from 'vue-router'
 import { useAuthStore } from '../../stores/authStore'
 import { useI18n } from 'vue-i18n'
 import LanguageSelector from "../LanguageSelector.vue";
+import CloseButton from "../CloseButton.vue";
 
 const router = useRouter()
 const authStore = useAuthStore()
@@ -30,26 +31,20 @@ const closeNav = () => {
 
 <template>
   <nav class="app-nav">
-    <button class="nav-toggle" @click="toggleNav" :aria-expanded="isNavOpen">
+    <button class="nav-toggle" v-show="!isNavOpen" @click="toggleNav" :aria-expanded="isNavOpen">
       <svg v-if="!isNavOpen" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <line x1="3" y1="12" x2="21" y2="12"></line>
           <line x1="3" y1="6" x2="21" y2="6"></line>
           <line x1="3" y1="18" x2="21" y2="18"></line>
       </svg>
-      <svg v-else xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <line x1="18" y1="6" x2="6" y2="18"></line>
-        <line x1="6" y1="6" x2="18" y2="18"></line>
-      </svg>
+      <CloseButton v-else/>
     </button>
 
     <div class="nav-content" :class="{ 'is-open': isNavOpen }">
       <div class="nav-header">
         <h2>{{ t('navigation.title') }}</h2>
         <button class="close-nav" @click="closeNav">
-          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <line x1="18" y1="6" x2="6" y2="18"></line>
-            <line x1="6" y1="6" x2="18" y2="18"></line>
-          </svg>
+          <CloseButton/>
         </button>
       </div>
 
@@ -133,6 +128,19 @@ const closeNav = () => {
 
 .nav-toggle:hover {
   background: var(--color-primary-dark);
+}
+
+@media (max-width: 768px) {
+  .nav-toggle {
+    position: fixed;
+    top: var(--space-4);
+    right: var(--space-4);
+  }
+
+  .nav-links {
+    gap: var(--space-2);
+    padding: var(--space-6) !important;
+  }
 }
 
 .nav-content {

@@ -59,10 +59,21 @@ onMounted(() => {
 .main-content {
   flex: 1;
   padding-top: 80px; /* Adjust this value based on your header height */
+  padding-bottom: var(--space-8);
 }
 
 .main-content.with-nav {
   padding-top: calc(var(--space-4) * 2 + 24px);
+}
+
+@media (max-width: 768px) {
+  .main-content {
+    padding-top: calc(80px + var(--space-4));
+  }
+
+  .main-content.with-nav {
+    padding-top: calc(var(--space-4) * 3 + 24px);
+  }
 }
 
 @media (prefers-color-scheme: dark) {
