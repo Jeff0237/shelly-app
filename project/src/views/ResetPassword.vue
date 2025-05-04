@@ -1,22 +1,64 @@
 <script setup lang="ts">
-import { ref } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
+import { ref, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
 import { useAuthStore } from '../stores/authStore'
 
-const route = useRoute()
 const router = useRouter()
 const authStore = useAuthStore()
 
+const email = ref('')
+const otp = ref('')
 const password = ref('')
 const confirmPassword = ref('')
 const error = ref('')
 const success = ref(false)
 const isLoading = ref(false)
+const isOTPVerified = ref(false)
+const showPassword = ref(false)
+const showConfirmPassword = ref(false)
 
-const handleSubmit = async () => {
+onMounted(() => {
+  // If email is stored from forgot password page, use it
+  if (authStore.resetEmail) {
+    email.value = authStore.resetEmail
+  }
+})
+
+const handleRequestOTP = async () => {
   try {
     error.value = ''
+    isLoading.value = true
+    await authStore.requestPasswordReset(email.value)
+    success.value = true
+  } catch (e) {
+    error.value = e instanceof Error ? e.message : 'Failed to request OTP'
+  } finally {
+    isLoading.value = false
+  }
+}
+
+const handleVerifyOTP = async () => {
+  try {
+    error.value = ''
+    isLoading.value = true
+    
+    if (!email.value) {
+      throw new Error('Email is required')
+    }
+    
+    await authStore.verifyOTP(email.value, otp.value)
+    isOTPVerified.value = true
     success.value = false
+  } catch (e) {
+    error.value = e instanceof Error ? e.message : 'Failed to verify OTP'
+  } finally {
+    isLoading.value = false
+  }
+}
+
+const handleResetPassword = async () => {
+  try {
+    error.value = ''
     
     if (password.value !== confirmPassword.value) {
       error.value = 'Passwords do not match'
@@ -24,13 +66,7 @@ const handleSubmit = async () => {
     }
     
     isLoading.value = true
-    const token = route.query.token as string
-    
-    if (!token) {
-      throw new Error('Invalid reset token')
-    }
-    
-    await authStore.resetPassword(token, password.value)
+    await authStore.resetPassword(email.value, password.value)
     success.value = true
     
     // Redirect to login after 2 seconds
@@ -43,53 +79,151 @@ const handleSubmit = async () => {
     isLoading.value = false
   }
 }
+
+const togglePasswordVisibility = () => {
+  showPassword.value = !showPassword.value
+}
+
+const toggleConfirmPasswordVisibility = () => {
+  showConfirmPassword.value = !showConfirmPassword.value
+}
 </script>
 
 <template>
   <div class="auth-page">
     <div class="auth-container">
-      <h1>Set New Password</h1>
+      <h1>Reset Password</h1>
       
-      <form @submit.prevent="handleSubmit" class="auth-form">
+      <form @submit.prevent="isOTPVerified ? handleResetPassword() : handleVerifyOTP()" class="auth-form">
         <div v-if="error" class="error-message">
           {{ error }}
         </div>
         
         <div v-if="success" class="success-message">
-          Password has been reset successfully. Redirecting to login...
+          <template v-if="isOTPVerified">
+            Password has been reset successfully. Redirecting to login...
+          </template>
+          <template v-else>
+            OTP has been sent to your email. Please check your inbox.
+          </template>
         </div>
         
-        <div class="form-group">
-          <label for="password">New Password</label>
-          <input
-            id="password"
-            v-model="password"
-            type="password"
-            required
-            placeholder="Enter new password"
-            class="form-input"
-          />
-        </div>
+        <!-- Email and OTP Section -->
+        <template v-if="!isOTPVerified">
+          <div class="form-group">
+            <label for="email">Email</label>
+            <input
+              id="email"
+              v-model="email"
+              type="email"
+              required
+              placeholder="Enter your email"
+              class="form-input"
+              :disabled="!!authStore.resetEmail"
+            />
+          </div>
+          
+          <button 
+            type="button" 
+            class="submit-button"
+            @click="handleRequestOTP"
+            :disabled="isLoading || !email"
+          >
+            {{ isLoading ? 'Sending...' : 'Send OTP' }}
+          </button>
+          
+          <div class="form-group">
+            <label for="otp">Enter OTP</label>
+            <input
+              id="otp"
+              v-model="otp"
+              type="text"
+              required
+              placeholder="Enter 6-digit OTP"
+              class="form-input"
+              maxlength="6"
+              pattern="\d{6}"
+            />
+            <small class="form-help">Enter the 6-digit code sent to your email</small>
+          </div>
+          
+          <button 
+            type="submit" 
+            class="submit-button"
+            :disabled="isLoading || !otp"
+          >
+            {{ isLoading ? 'Verifying...' : 'Verify OTP' }}
+          </button>
+        </template>
         
-        <div class="form-group">
-          <label for="confirm-password">Confirm New Password</label>
-          <input
-            id="confirm-password"
-            v-model="confirmPassword"
-            type="password"
-            required
-            placeholder="Confirm new password"
-            class="form-input"
-          />
-        </div>
-        
-        <button 
-          type="submit" 
-          class="submit-button"
-          :disabled="isLoading"
-        >
-          {{ isLoading ? 'Resetting...' : 'Reset Password' }}
-        </button>
+        <!-- Password Reset Section -->
+        <template v-else>
+          <div class="form-group">
+            <label for="password">New Password</label>
+            <div class="password-input-container">
+              <input
+                id="password"
+                v-model="password"
+                :type="showPassword ? 'text' : 'password'"
+                required
+                placeholder="Enter new password"
+                class="form-input"
+              />
+              <button 
+                type="button"
+                class="password-toggle"
+                @click="togglePasswordVisibility"
+                :title="showPassword ? 'Hide password' : 'Show password'"
+              >
+                <svg v-if="showPassword" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
+                  <line x1="1" y1="1" x2="23" y2="23"></line>
+                </svg>
+                <svg v-else xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                  <circle cx="12" cy="12" r="3"></circle>
+                </svg>
+              </button>
+            </div>
+          </div>
+          
+          <div class="form-group">
+            <label for="confirm-password">Confirm New Password</label>
+            <div class="password-input-container">
+              <input
+                id="confirm-password"
+                v-model="confirmPassword"
+                :type="showConfirmPassword ? 'text' : 'password'"
+                required
+                placeholder="Confirm new password"
+                class="form-input"
+              />
+              <button 
+                type="button"
+                class="password-toggle"
+                @click="toggleConfirmPasswordVisibility"
+                :title="showConfirmPassword ? 'Hide password' : 'Show password'"
+              >
+                <svg v-if="showConfirmPassword" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
+                  <line x1="1" y1="1" x2="23" y2="23"></line>
+                </svg>
+                <svg v-else xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                  <circle cx="12" cy="12" r="3"></circle>
+                </svg>
+              </button>
+            </div>
+          </div>
+          
+          <button 
+            type="submit" 
+            class="submit-button"
+            :disabled="isLoading"
+          >
+            {{ isLoading ? 'Resetting...' : 'Reset Password' }}
+          </button>
+        </template>
       </form>
       
       <div class="auth-links">
@@ -149,6 +283,35 @@ h1 {
 .form-input:focus {
   outline: none;
   border-color: var(--color-primary);
+}
+
+.form-help {
+  color: var(--color-neutral-600);
+  font-size: 0.875rem;
+}
+
+.password-input-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.password-toggle {
+  position: absolute;
+  right: var(--space-3);
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  color: var(--color-neutral-600);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color var(--transition-base);
+}
+
+.password-toggle:hover {
+  color: var(--color-primary);
 }
 
 .submit-button {
@@ -214,6 +377,18 @@ h1 {
   
   .form-input:focus {
     border-color: var(--color-primary);
+  }
+  
+  .form-help {
+    color: var(--color-neutral-400);
+  }
+  
+  .password-toggle {
+    color: var(--color-neutral-400);
+  }
+  
+  .password-toggle:hover {
+    color: var(--color-primary);
   }
 }
 </style> 

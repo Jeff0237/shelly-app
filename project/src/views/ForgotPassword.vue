@@ -15,7 +15,7 @@ const handleSubmit = async () => {
     error.value = ''
     isLoading.value = true
     await authStore.requestPasswordReset(email.value)
-    router.push('/verify-otp')
+    router.push('/reset-password')
   } catch (e) {
     error.value = e instanceof Error ? e.message : 'Failed to request password reset'
   } finally {
@@ -51,7 +51,7 @@ const handleSubmit = async () => {
           class="submit-button"
           :disabled="isLoading"
         >
-          {{ isLoading ? 'Sending...' : 'Send OTP' }}
+          {{ isLoading ? 'Sending...' : 'Continue' }}
         </button>
       </form>
       

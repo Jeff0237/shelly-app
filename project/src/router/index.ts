@@ -9,7 +9,6 @@ import NotFound from '../views/NotFound.vue'
 import Login from '../views/Login.vue'
 import Register from '../views/Register.vue'
 import ForgotPassword from '../views/ForgotPassword.vue'
-import VerifyOTP from '../views/VerifyOTP.vue'
 import ResetPassword from '../views/ResetPassword.vue'
 
 const router = createRouter({
@@ -35,12 +34,6 @@ const router = createRouter({
       path: '/forgot-password',
       name: 'forgot-password',
       component: ForgotPassword,
-      meta: { requiresAuth: false }
-    },
-    {
-      path: '/verify-otp',
-      name: 'verify-otp',
-      component: VerifyOTP,
       meta: { requiresAuth: false }
     },
     {
