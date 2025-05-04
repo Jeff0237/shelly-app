@@ -143,19 +143,21 @@ const closeNav = () => {
   width: 300px;
   background: white;
   box-shadow: var(--shadow);
-  transition: transform var(--transition-base);
+  transition: all var(--transition-base);
   z-index: 2000;
   display: flex;
   flex-direction: column;
   border-radius: var(--radius);
   margin-top: var(--space-2);
   visibility: hidden;
+  opacity: 0;
+  transform: translateX(100%);
 }
 
 .nav-content.is-open {
-  transform: translateX(0);
-  opacity: 1;
   visibility: visible;
+  opacity: 1;
+  transform: translateX(0);
 }
 
 .nav-header {
@@ -173,19 +175,20 @@ const closeNav = () => {
 }
 
 .close-nav {
-  background: none;
+  background: var(--color-primary);
   border: none;
   padding: var(--space-2);
   cursor: pointer;
-  color: var(--color-neutral-600);
+  color: white;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: color var(--transition-base);
+  transition: background-color var(--transition-base);
+  border-radius: var(--radius);
 }
 
 .close-nav:hover {
-  color: var(--color-primary);
+  background: var(--color-primary-dark);
 }
 
 .nav-links {
