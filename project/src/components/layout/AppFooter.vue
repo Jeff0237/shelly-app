@@ -3,10 +3,10 @@
 const currentYear = new Date().getFullYear()
 
 const navItems = [
-  { label: 'Dashboard', route: '/' },
-  { label: 'Floor Plan', route: '/floor-plan' },
-  { label: 'Activity', route: '/activity' },
-  { label: 'Settings', route: '/settings' }
+  { label: 'Dashboard', route: 'dashboard', exact: true },
+  { label: 'Floor Plan', route: 'floor-plan' },
+  { label: 'Activity', route: 'activities' },
+  { label: 'Settings', route: 'settings' }
 ]
 </script>
 
@@ -16,7 +16,13 @@ const navItems = [
       <nav class="footer-nav">
         <ul class="nav-list">
           <li v-for="item in navItems" :key="item.label">
-            <RouterLink :to="item.route" class="nav-link">
+            <RouterLink 
+              :to="{name: item.route}" 
+              class="nav-link"
+              activeClass=""
+              exactActiveClass="router-link-active router-link-exact-active"
+              :exact="item.exact"
+            >
               {{ item.label }}
             </RouterLink>
           </li>

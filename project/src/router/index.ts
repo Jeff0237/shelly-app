@@ -16,12 +16,12 @@ const router = createRouter({
     },
     {
       path: '/dashboard',
-      name: 'dashboard',
       children: [
         {
           path: '',
-          name: 'index',
-          component: Dashboard
+          name: 'dashboard',
+          component: Dashboard,
+          meta: { exact: true }
         },
         {
           path: 'sensor/:id',
@@ -35,8 +35,8 @@ const router = createRouter({
           component: FloorPlan
         },
         {
-          path: 'activity',
-          name: 'activity',
+          path: 'activities',
+          name: 'activities',
           component: ActivityLog
         },
         {

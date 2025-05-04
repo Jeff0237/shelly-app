@@ -1,11 +1,4 @@
 <script setup lang="ts">
-import { useRouter } from 'vue-router'
-
-const router = useRouter()
-
-const goHome = () => {
-  router.push('/')
-}
 </script>
 
 <template>
@@ -14,9 +7,9 @@ const goHome = () => {
       <h1>404</h1>
       <h2>Page Not Found</h2>
       <p>The page you're looking for doesn't exist or has been moved.</p>
-      <button class="home-button" @click="goHome">
+      <RouterLink class="home-button" :to="{name: 'home'}">
         Return to Dashboard
-      </button>
+      </RouterLink>
     </div>
   </div>
 </template>
