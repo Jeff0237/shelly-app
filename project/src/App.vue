@@ -50,7 +50,7 @@ onMounted(() => {
 </template>
 
 <style scoped>
-.app-container, .app {
+.app {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
@@ -58,7 +58,7 @@ onMounted(() => {
 
 .main-content {
   flex: 1;
-  padding: var(--space-4);
+  padding-top: 80px; /* Adjust this value based on your header height */
 }
 
 .main-content.with-nav {

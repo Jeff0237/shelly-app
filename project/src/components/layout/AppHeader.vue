@@ -82,11 +82,10 @@ const handleLogout = async () => {
             </button>
           </div>
         </div>
-      </div>
 
-      <div class="relative">
-        sss
-        <AppNav v-if="authStore.isAuthenticated" />
+        <div class="relative">
+          <AppNav v-if="authStore.isAuthenticated" />
+        </div>
       </div>
     </div>
   </header>
@@ -98,6 +97,11 @@ const handleLogout = async () => {
   border-bottom: 1px solid var(--color-neutral-200);
   padding: var(--space-4) 0;
   box-shadow: var(--shadow-sm);
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
 }
 
 .header-container {
@@ -107,12 +111,14 @@ const handleLogout = async () => {
   position: relative;
 }
 
+.header-right {
+  display: flex;
+  justify-content: space-between;
+}
+
 .relative {
+  margin-left: 3rem;
   position: relative;
-  background: #000;
-  z-index: 20000;
-  width: 400px;
-  padding-right: 4rem;
 }
 
 .app-title {
@@ -239,6 +245,11 @@ const handleLogout = async () => {
   .header-container {
     flex-direction: column;
     gap: var(--space-3);
+  }
+  
+  .relative {
+    width: 100%;
+    padding-right: 0;
   }
   
   .user-section {

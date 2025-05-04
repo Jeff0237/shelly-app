@@ -110,17 +110,14 @@ const closeNav = () => {
 
 <style scoped>
 .app-nav {
-  position: fixed;
-  top: 0;
-  right: 0;
+  position: relative;
   width: 100%;
-  z-index: 1000;
 }
 
 .nav-toggle {
-  position: fixed;
-  top: var(--space-5);
-  right: var(--space-4);
+  position: absolute;
+  top: 0;
+  right: 0;
   background: var(--color-primary);
   color: white;
   border: none;
@@ -141,19 +138,24 @@ const closeNav = () => {
 .nav-content {
   position: fixed;
   top: 0;
-  right: -300px;
+  bottom: 0;
+  right: 0;
   width: 300px;
-  height: 100vh;
   background: white;
   box-shadow: var(--shadow);
   transition: transform var(--transition-base);
-  z-index: 1000;
+  z-index: 2000;
   display: flex;
   flex-direction: column;
+  border-radius: var(--radius);
+  margin-top: var(--space-2);
+  visibility: hidden;
 }
 
 .nav-content.is-open {
-  transform: translateX(-300px);
+  transform: translateX(0);
+  opacity: 1;
+  visibility: visible;
 }
 
 .nav-header {
