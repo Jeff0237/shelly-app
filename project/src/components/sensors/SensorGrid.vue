@@ -2,6 +2,7 @@
 import { useSensorStore } from '../../stores/sensorStore'
 import SensorCard from './SensorCard.vue'
 import { useRouter } from 'vue-router'
+import {computed} from "vue";
 
 const props = defineProps<{
   locationFilter?: string

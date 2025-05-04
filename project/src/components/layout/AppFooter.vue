@@ -1,15 +1,12 @@
 <script setup lang="ts">
-import { ref } from 'vue'
-import { useRouter } from 'vue-router'
 
-const router = useRouter()
 const currentYear = new Date().getFullYear()
 
 const navItems = [
-  { name: 'Dashboard', path: '/' },
-  { name: 'Floor Plan', path: '/floor-plan' },
-  { name: 'Activity', path: '/activity' },
-  { name: 'Settings', path: '/settings' }
+  { label: 'Dashboard', route: '/' },
+  { label: 'Floor Plan', route: '/floor-plan' },
+  { label: 'Activity', route: '/activity' },
+  { label: 'Settings', route: '/settings' }
 ]
 </script>
 
@@ -18,10 +15,10 @@ const navItems = [
     <div class="container">
       <nav class="footer-nav">
         <ul class="nav-list">
-          <li v-for="item in navItems" :key="item.name">
-            <router-link :to="item.path" class="nav-link">
-              {{ item.name }}
-            </router-link>
+          <li v-for="item in navItems" :key="item.label">
+            <RouterLink :to="item.route" class="nav-link">
+              {{ item.label }}
+            </RouterLink>
           </li>
         </ul>
       </nav>

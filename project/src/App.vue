@@ -1,8 +1,9 @@
 <script setup lang="ts">
-import { ref, onMounted, watch } from 'vue'
+import { onMounted } from 'vue'
 import { useSensorStore } from './stores/sensorStore'
 import AppHeader from './components/layout/AppHeader.vue'
 import AppFooter from './components/layout/AppFooter.vue'
+import {onBeforeRouteUpdate} from "vue-router";
 
 const sensorStore = useSensorStore()
 
@@ -29,13 +30,19 @@ onMounted(() => {
   // Start simulation after 3 seconds
   setTimeout(simulateUpdates, 3000)
 })
+
+onBeforeRouteUpdate(async (to, from) => {
+  console.log('Route changes')
+  console.log(to)
+  console.log(from)
+})
 </script>
 
 <template>
   <div class="app-container">
     <AppHeader />
     <main>
-      <router-view />
+      <RouterView />
     </main>
     <AppFooter />
   </div>
