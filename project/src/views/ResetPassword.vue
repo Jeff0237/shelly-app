@@ -1,22 +1,44 @@
 <script setup lang="ts">
 import { ref } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 import { useAuthStore } from '../stores/authStore'
 
+const route = useRoute()
+const router = useRouter()
 const authStore = useAuthStore()
 
-const email = ref('')
 const password = ref('')
+const confirmPassword = ref('')
 const error = ref('')
+const success = ref(false)
 const isLoading = ref(false)
 
-const handleLogin = async () => {
+const handleSubmit = async () => {
   try {
     error.value = ''
+    success.value = false
+    
+    if (password.value !== confirmPassword.value) {
+      error.value = 'Passwords do not match'
+      return
+    }
+    
     isLoading.value = true
-    await authStore.login(email.value, password.value)
-    location.href = '/';
+    const token = route.query.token as string
+    
+    if (!token) {
+      throw new Error('Invalid reset token')
+    }
+    
+    await authStore.resetPassword(token, password.value)
+    success.value = true
+    
+    // Redirect to login after 2 seconds
+    setTimeout(() => {
+      router.push('/login')
+    }, 2000)
   } catch (e) {
-    error.value = e instanceof Error ? e.message : 'Failed to login'
+    error.value = e instanceof Error ? e.message : 'Failed to reset password'
   } finally {
     isLoading.value = false
   }
@@ -26,33 +48,37 @@ const handleLogin = async () => {
 <template>
   <div class="auth-page">
     <div class="auth-container">
-      <h1>Login</h1>
+      <h1>Set New Password</h1>
       
-      <form @submit.prevent="handleLogin" class="auth-form">
+      <form @submit.prevent="handleSubmit" class="auth-form">
         <div v-if="error" class="error-message">
           {{ error }}
         </div>
         
-        <div class="form-group">
-          <label for="email">Email</label>
-          <input
-            id="email"
-            v-model="email"
-            type="email"
-            required
-            placeholder="Enter your email"
-            class="form-input"
-          />
+        <div v-if="success" class="success-message">
+          Password has been reset successfully. Redirecting to login...
         </div>
         
         <div class="form-group">
-          <label for="password">Password</label>
+          <label for="password">New Password</label>
           <input
             id="password"
             v-model="password"
             type="password"
             required
-            placeholder="Enter your password"
+            placeholder="Enter new password"
+            class="form-input"
+          />
+        </div>
+        
+        <div class="form-group">
+          <label for="confirm-password">Confirm New Password</label>
+          <input
+            id="confirm-password"
+            v-model="confirmPassword"
+            type="password"
+            required
+            placeholder="Confirm new password"
             class="form-input"
           />
         </div>
@@ -62,17 +88,14 @@ const handleLogin = async () => {
           class="submit-button"
           :disabled="isLoading"
         >
-          {{ isLoading ? 'Logging in...' : 'Login' }}
+          {{ isLoading ? 'Resetting...' : 'Reset Password' }}
         </button>
       </form>
       
       <div class="auth-links">
         <p>
-          Don't have an account? 
-          <RouterLink to="/register" class="auth-link">Register</RouterLink>
-        </p>
-        <p>
-          <RouterLink to="/forgot-password" class="auth-link">Forgot Password?</RouterLink>
+          Remember your password? 
+          <RouterLink to="/login" class="auth-link">Login</RouterLink>
         </p>
       </div>
     </div>
@@ -150,6 +173,14 @@ h1 {
 .error-message {
   background-color: var(--color-error-light);
   color: var(--color-error-dark);
+  padding: var(--space-3);
+  border-radius: var(--radius);
+  text-align: center;
+}
+
+.success-message {
+  background-color: var(--color-success-light);
+  color: var(--color-success-dark);
   padding: var(--space-3);
   border-radius: var(--radius);
   text-align: center;

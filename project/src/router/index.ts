@@ -8,6 +8,8 @@ import Settings from '../views/Settings.vue'
 import NotFound from '../views/NotFound.vue'
 import Login from '../views/Login.vue'
 import Register from '../views/Register.vue'
+import ForgotPassword from '../views/ForgotPassword.vue'
+import ResetPassword from '../views/ResetPassword.vue'
 
 const router = createRouter({
   history: createWebHistory(),
@@ -26,6 +28,18 @@ const router = createRouter({
       path: '/register',
       name: 'register',
       component: Register,
+      meta: { requiresAuth: false }
+    },
+    {
+      path: '/forgot-password',
+      name: 'forgot-password',
+      component: ForgotPassword,
+      meta: { requiresAuth: false }
+    },
+    {
+      path: '/reset-password',
+      name: 'reset-password',
+      component: ResetPassword,
       meta: { requiresAuth: false }
     },
     {

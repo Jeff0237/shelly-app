@@ -5,18 +5,19 @@ import { useAuthStore } from '../stores/authStore'
 const authStore = useAuthStore()
 
 const email = ref('')
-const password = ref('')
 const error = ref('')
+const success = ref(false)
 const isLoading = ref(false)
 
-const handleLogin = async () => {
+const handleSubmit = async () => {
   try {
     error.value = ''
+    success.value = false
     isLoading.value = true
-    await authStore.login(email.value, password.value)
-    location.href = '/';
+    await authStore.requestPasswordReset(email.value)
+    success.value = true
   } catch (e) {
-    error.value = e instanceof Error ? e.message : 'Failed to login'
+    error.value = e instanceof Error ? e.message : 'Failed to request password reset'
   } finally {
     isLoading.value = false
   }
@@ -26,11 +27,15 @@ const handleLogin = async () => {
 <template>
   <div class="auth-page">
     <div class="auth-container">
-      <h1>Login</h1>
+      <h1>Reset Password</h1>
       
-      <form @submit.prevent="handleLogin" class="auth-form">
+      <form @submit.prevent="handleSubmit" class="auth-form">
         <div v-if="error" class="error-message">
           {{ error }}
+        </div>
+        
+        <div v-if="success" class="success-message">
+          If an account exists with this email, you will receive password reset instructions.
         </div>
         
         <div class="form-group">
@@ -45,34 +50,19 @@ const handleLogin = async () => {
           />
         </div>
         
-        <div class="form-group">
-          <label for="password">Password</label>
-          <input
-            id="password"
-            v-model="password"
-            type="password"
-            required
-            placeholder="Enter your password"
-            class="form-input"
-          />
-        </div>
-        
         <button 
           type="submit" 
           class="submit-button"
           :disabled="isLoading"
         >
-          {{ isLoading ? 'Logging in...' : 'Login' }}
+          {{ isLoading ? 'Sending...' : 'Send Reset Link' }}
         </button>
       </form>
       
       <div class="auth-links">
         <p>
-          Don't have an account? 
-          <RouterLink to="/register" class="auth-link">Register</RouterLink>
-        </p>
-        <p>
-          <RouterLink to="/forgot-password" class="auth-link">Forgot Password?</RouterLink>
+          Remember your password? 
+          <RouterLink to="/login" class="auth-link">Login</RouterLink>
         </p>
       </div>
     </div>
@@ -150,6 +140,14 @@ h1 {
 .error-message {
   background-color: var(--color-error-light);
   color: var(--color-error-dark);
+  padding: var(--space-3);
+  border-radius: var(--radius);
+  text-align: center;
+}
+
+.success-message {
+  background-color: var(--color-success-light);
+  color: var(--color-success-dark);
   padding: var(--space-3);
   border-radius: var(--radius);
   text-align: center;

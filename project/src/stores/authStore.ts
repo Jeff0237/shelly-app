@@ -75,6 +75,32 @@ export const useAuthStore = defineStore('auth', () => {
     }
   }
 
+  const requestPasswordReset = async (email: string) => {
+    // Simulate API call
+    await new Promise(resolve => setTimeout(resolve, 1000))
+    
+    if (!email) {
+      throw new Error('Email is required')
+    }
+    
+    // In a real app, this would send an email with a reset link
+    // For demo purposes, we'll just simulate success
+    console.log('Password reset requested for:', email)
+  }
+
+  const resetPassword = async (resetToken: string, newPassword: string) => {
+    // Simulate API call
+    await new Promise(resolve => setTimeout(resolve, 1000))
+    
+    if (!resetToken || !newPassword) {
+      throw new Error('Invalid reset data')
+    }
+    
+    // In a real app, this would validate the token and update the password
+    // For demo purposes, we'll just simulate success
+    console.log('Password reset with token:', resetToken)
+  }
+
   return {
     user,
     token,
@@ -82,6 +108,8 @@ export const useAuthStore = defineStore('auth', () => {
     login,
     register,
     logout,
-    initialize
+    initialize,
+    requestPasswordReset,
+    resetPassword
   }
 }) 
