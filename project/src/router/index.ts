@@ -2,7 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 import { useAuthStore } from '../stores/authStore'
 import Dashboard from '../views/Dashboard.vue'
 import SensorDetails from '../views/SensorDetails.vue'
-import FloorPlan from '../views/FloorPlan.vue'
+// import FloorPlan from '../views/FloorPlan.vue'
 import ActivityLog from '../views/ActivityLog.vue'
 import Settings from '../views/Settings.vue'
 import NotFound from '../views/NotFound.vue'
@@ -17,13 +17,8 @@ const router = createRouter({
   routes: [
     {
       path: '/',
+      name: 'home',
       redirect: '/dashboard'
-    },
-    {
-      path: '/components',
-      name: 'components',
-      component: ListComponents,
-      meta: { requiresAuth: true }
     },
     {
       path: '/login',
@@ -66,10 +61,15 @@ const router = createRouter({
           props: true
         },
         {
-          path: 'floor-plan',
-          name: 'floor-plan',
-          component: FloorPlan
+          path: 'components',
+          name: 'components',
+          component: ListComponents,
         },
+        // {
+        //   path: 'floor-plan',
+        //   name: 'floor-plan',
+        //   component: FloorPlan
+        // },
         {
           path: 'activities',
           name: 'activities',
@@ -96,14 +96,18 @@ router.beforeEach((to, _from, next) => {
 
   // Initialize auth state from localStorage
   authStore.initialize()
-  
-  const requiresAuth = to.matched.some(record => record.meta.requiresAuth)
+  let _routeName = '';
+  const requiresAuth: boolean|null = to.matched.some(record => {
+    _routeName = record.name?.toString() ?? '';
+    return record.meta.requiresAuth;
+  });
+
   const isAuthenticated = authStore.isAuthenticated
-  
+
   if (requiresAuth && !isAuthenticated) {
     // Redirect to log in if trying to access a protected route while not authenticated
     next({ name: 'login' })
-  } else if (!requiresAuth && isAuthenticated) {
+  } else if (_routeName !== 'not-found' && !requiresAuth && isAuthenticated) {
     // Redirect to the dashboard if trying to access auth pages while authenticated
     next({ name: 'dashboard' })
   } else {
