@@ -4,7 +4,7 @@ import { useRouter } from 'vue-router'
 import { useAuthStore } from '../../stores/authStore'
 import { useI18n } from 'vue-i18n'
 import LanguageSelector from "../LanguageSelector.vue";
-import CloseButton from "../CloseButton.vue";
+import IconClose from "../icons/IconClose.vue";
 
 const router = useRouter()
 const authStore = useAuthStore()
@@ -37,14 +37,14 @@ const closeNav = () => {
           <line x1="3" y1="6" x2="21" y2="6"></line>
           <line x1="3" y1="18" x2="21" y2="18"></line>
       </svg>
-      <CloseButton v-else/>
+      <IconClose v-else/>
     </button>
 
     <div class="nav-content" :class="{ 'is-open': isNavOpen }">
       <div class="nav-header">
         <h2>{{ t('navigation.title') }}</h2>
         <button class="close-nav" @click="closeNav">
-          <CloseButton/>
+          <IconClose/>
         </button>
       </div>
 

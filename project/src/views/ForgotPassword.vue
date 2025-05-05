@@ -67,7 +67,7 @@ const handleSubmit = async () => {
 
 <style scoped>
 .auth-page {
-  min-height: 100vh;
+  min-height: 60vh;
   display: flex;
   align-items: center;
   justify-content: center;

@@ -1,6 +1,9 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { useAuthStore } from '../stores/authStore'
+import ButtonDefault from "../components/ButtonDefault.vue";
+import IconEyeOpen from "../components/icons/IconEyeOpen.vue";
+import IconEyeClose from "../components/icons/IconEyeClose.vue";
 
 const authStore = useAuthStore()
 
@@ -67,25 +70,18 @@ const togglePasswordVisibility = () => {
               @click="togglePasswordVisibility"
               :title="showPassword ? 'Hide password' : 'Show password'"
             >
-              <svg v-if="showPassword" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
-                <line x1="1" y1="1" x2="23" y2="23"></line>
-              </svg>
-              <svg v-else xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
-                <circle cx="12" cy="12" r="3"></circle>
-              </svg>
+              <IconEyeOpen v-if="showPassword" />
+              <IconEyeClose v-else />
             </button>
           </div>
         </div>
-        
-        <button 
-          type="submit" 
-          class="submit-button"
-          :disabled="isLoading"
-        >
+
+        <ButtonDefault
+            type="submit"
+            class="submit-button"
+            :disabled="isLoading">
           {{ isLoading ? 'Logging in...' : 'Login' }}
-        </button>
+        </ButtonDefault>
       </form>
       
       <div class="auth-links">
@@ -103,7 +99,7 @@ const togglePasswordVisibility = () => {
 
 <style scoped>
 .auth-page {
-  min-height: 100vh;
+  min-height: 60vh;
   display: flex;
   align-items: center;
   justify-content: center;
