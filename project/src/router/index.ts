@@ -10,6 +10,7 @@ import Login from '../views/Login.vue'
 import Register from '../views/Register.vue'
 import ForgotPassword from '../views/ForgotPassword.vue'
 import ResetPassword from '../views/ResetPassword.vue'
+import ListComponents from '../views/Components.vue'
 
 const router = createRouter({
   history: createWebHistory(),
@@ -17,6 +18,12 @@ const router = createRouter({
     {
       path: '/',
       redirect: '/dashboard'
+    },
+    {
+      path: '/components',
+      name: 'components',
+      component: ListComponents,
+      meta: { requiresAuth: true }
     },
     {
       path: '/login',
@@ -84,9 +91,9 @@ const router = createRouter({
 })
 
 // Navigation guard
-router.beforeEach((to, from, next) => {
+router.beforeEach((to, _from, next) => {
   const authStore = useAuthStore()
-  
+
   // Initialize auth state from localStorage
   authStore.initialize()
   
@@ -94,10 +101,10 @@ router.beforeEach((to, from, next) => {
   const isAuthenticated = authStore.isAuthenticated
   
   if (requiresAuth && !isAuthenticated) {
-    // Redirect to login if trying to access protected route while not authenticated
+    // Redirect to log in if trying to access a protected route while not authenticated
     next({ name: 'login' })
   } else if (!requiresAuth && isAuthenticated) {
-    // Redirect to dashboard if trying to access auth pages while authenticated
+    // Redirect to the dashboard if trying to access auth pages while authenticated
     next({ name: 'dashboard' })
   } else {
     next()

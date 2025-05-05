@@ -59,6 +59,26 @@ export default {
     profile: 'Profile',
     notifications: 'Notifications',
     help: 'Help',
+    home: "Home",
+    components: "Components"
+  },
+  components: {
+    title: "Components",
+    add_new: "Add New Component",
+    types: {
+      door: "Door",
+      window: "Window",
+      floor: "Floor",
+      room: "Room"
+    },
+    status: {
+      active: "Active",
+      inactive: "Inactive"
+    },
+    form: {
+      name: "Component Name",
+      type: "Component Type"
+    }
   },
   dashboard: {
     title: 'Dashboard',

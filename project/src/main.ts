@@ -12,12 +12,3 @@ app.use(router)
 app.use(i18n)
 
 app.mount('#app')
-
-
-
-await fetch('meteo')
-
-await fetch('cities')
-
-
-
