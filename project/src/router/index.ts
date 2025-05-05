@@ -2,7 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 import { useAuthStore } from '../stores/authStore'
 import Dashboard from '../views/Dashboard.vue'
 import SensorDetails from '../views/SensorDetails.vue'
-// import FloorPlan from '../views/FloorPlan.vue'
+import FloorPlan from '../views/FloorPlan.vue'
 import ActivityLog from '../views/ActivityLog.vue'
 import Settings from '../views/Settings.vue'
 import NotFound from '../views/NotFound.vue'
@@ -65,11 +65,11 @@ const router = createRouter({
           name: 'components',
           component: ListComponents,
         },
-        // {
-        //   path: 'floor-plan',
-        //   name: 'floor-plan',
-        //   component: FloorPlan
-        // },
+        {
+          path: 'floor-plan',
+          name: 'floor-plan',
+          component: FloorPlan
+        },
         {
           path: 'activities',
           name: 'activities',

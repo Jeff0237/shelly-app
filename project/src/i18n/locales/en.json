@@ -1,0 +1,36 @@
+{
+  "navigation": {
+    "home": "Home",
+    "dashboard": "Dashboard",
+    "settings": "Settings",
+    "components": "Components"
+  },
+  "components": {
+    "title": "Components",
+    "add_new": "Add New Component",
+    "add_floor": "Add Floor",
+    "add_room": "Add Room",
+    "types": {
+      "door": "Door",
+      "window": "Window",
+      "floor": "Floor",
+      "room": "Room"
+    },
+    "status": {
+      "active": "Active",
+      "inactive": "Inactive"
+    },
+    "form": {
+      "name": "Component Name",
+      "type": "Component Type",
+      "floor": "Floor",
+      "room": "Room",
+      "floor_name": "Floor Name",
+      "room_name": "Room Name"
+    }
+  },
+  "common": {
+    "cancel": "Cancel",
+    "save": "Save"
+  }
+} 
