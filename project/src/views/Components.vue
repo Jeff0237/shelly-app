@@ -5,46 +5,13 @@ import AppModal from '../components/ui/AppModal.vue'
 import AppButton from '../components/ui/AppButton.vue'
 import AppInput from '../components/ui/AppInput.vue'
 import AppSelect from '../components/ui/AppSelect.vue'
+import {ComponentContract, ComponentTypes, Floor, Room, StatusTypes} from "../types";
 
 const { t } = useI18n()
 
 const isModalOpen = ref(false)
 const isRoomModalOpen = ref(false)
 const isFloorModalOpen = ref(false)
-
-// Enums
-export enum StatusTypes {
-  ACTIVE = 'active',
-  INACTIVE = 'inactive',
-}
-
-export enum ComponentTypes {
-  FLOOR = 'floor',
-  DOOR = 'door',
-  WINDOW = 'window',
-  ROOM = 'room'
-}
-
-// Interfaces
-export interface ComponentContract {
-  id: number|string;
-  label: string;
-  type: ComponentTypes|string;
-  status: StatusTypes|string;
-  roomId: string;
-  floorId: string;
-}
-
-interface Room {
-  id: number|string;
-  label: string;
-  floorId: string;
-}
-
-interface Floor {
-  id: number|string;
-  label: string;
-}
 
 // Data
 const floors = ref<Floor[]>([
@@ -86,12 +53,13 @@ const newFloor = ref({
 const componentTypesList = [
   { value: ComponentTypes.DOOR, label: t('components.types.door') },
   { value: ComponentTypes.WINDOW, label: t('components.types.window') },
-  { value: ComponentTypes.FLOOR, label: t('components.types.floor') },
   { value: ComponentTypes.ROOM, label: t('components.types.room') },
+  { value: ComponentTypes.FLOOR, label: t('components.types.floor') },
 ]
 
 const showFloorSelect = computed(() => {
-  return floors.value.length > 1 && newComponent.value.type !== 'floor'
+  // return floors.value.length > 1 && newComponent.value.type !== 'floor'
+  return ComponentTypes.ROOM.toString() === newComponent.value.type.toString();
 })
 
 const showRoomSelect = computed(() => {
@@ -103,11 +71,15 @@ const showRoomSelect = computed(() => {
 })
 
 const availableRooms = computed(() => {
-  if (!newComponent.value.floorId) return []
-  return rooms.value
-    .filter(room => room.floorId === newComponent.value.floorId)
-    .map(room => ({ value: room.id.toString(), label: room.label }))
+  return rooms.value;
 })
+
+// const availableRooms = computed(() => {
+//   if (!newComponent.value.floorId) return []
+//   return rooms.value
+//     .filter(room => room.floorId === newComponent.value.floorId)
+//     .map(room => ({ value: room.id.toString(), label: room.label }))
+// })
 
 const floorOptions = computed(() => {
   return floors.value.map(floor => ({
@@ -245,18 +217,6 @@ const handleFloorSubmit = () => {
           required
         />
 
-        <div v-if="showFloorSelect" class="form-row">
-          <AppSelect
-            v-model="newComponent.floorId"
-            :label="t('components.form.floor')"
-            :options="floorOptions"
-            required
-          />
-          <AppButton type="button" variant="secondary" @click="openFloorModal">
-            {{ t('components.add_floor') }}
-          </AppButton>
-        </div>
-
         <div v-if="showRoomSelect" class="form-row">
           <AppSelect
             v-model="newComponent.roomId"
@@ -266,6 +226,18 @@ const handleFloorSubmit = () => {
           />
           <AppButton type="button" variant="secondary" @click="openRoomModal">
             {{ t('components.add_room') }}
+          </AppButton>
+        </div>
+
+        <div v-if="showFloorSelect" class="form-row">
+          <AppSelect
+              v-model="newComponent.floorId"
+              :label="t('components.form.floor')"
+              :options="floorOptions"
+              required
+          />
+          <AppButton type="button" variant="secondary" @click="openFloorModal">
+            {{ t('components.add_floor') }}
           </AppButton>
         </div>
 

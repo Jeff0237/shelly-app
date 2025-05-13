@@ -37,3 +37,37 @@ export interface Settings {
   notificationsEnabled: boolean
   batteryWarningThreshold: number // 0-100
 }
+
+
+export enum StatusTypes {
+  ACTIVE = 'active',
+  INACTIVE = 'inactive',
+}
+
+export enum ComponentTypes {
+  FLOOR = 'floor',
+  DOOR = 'door',
+  WINDOW = 'window',
+  ROOM = 'room'
+}
+
+// Interfaces
+export interface ComponentContract {
+  id: number|string;
+  label: string;
+  type: ComponentTypes|string;
+  status: StatusTypes|string;
+  roomId: string;
+  floorId: string;
+}
+
+export interface Room {
+  id: number|string;
+  label: string;
+  floorId: string;
+}
+
+export interface Floor {
+  id: number|string;
+  label: string;
+}
