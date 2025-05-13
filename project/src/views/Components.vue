@@ -12,44 +12,82 @@ const isModalOpen = ref(false)
 const isRoomModalOpen = ref(false)
 const isFloorModalOpen = ref(false)
 
-// Data structures
-const floors = ref([
-  { id: 0, name: 'Ground Floor' }
-])
-const rooms = ref([
-  { id: 1, name: 'Living Room', floorId: 0 },
-  { id: 2, name: 'Kitchen', floorId: 0 }
-])
-const components = ref([
-  { id: 1, name: 'Front Door', type: 'door', status: 'active', roomId: 1 },
-  { id: 2, name: 'Living Room Window', type: 'window', status: 'active', roomId: 1 },
-  { id: 3, name: 'Kitchen Floor', type: 'floor', status: 'inactive', floorId: 0 },
+// Enums
+export enum StatusTypes {
+  ACTIVE = 'active',
+  INACTIVE = 'inactive',
+}
+
+export enum ComponentTypes {
+  FLOOR = 'floor',
+  DOOR = 'door',
+  WINDOW = 'window',
+  ROOM = 'room'
+}
+
+// Interfaces
+export interface ComponentContract {
+  id: number|string;
+  label: string;
+  type: ComponentTypes|string;
+  status: StatusTypes|string;
+  roomId: string;
+  floorId: string;
+}
+
+interface Room {
+  id: number|string;
+  label: string;
+  floorId: string;
+}
+
+interface Floor {
+  id: number|string;
+  label: string;
+}
+
+// Data
+const floors = ref<Floor[]>([
+  { id: 1, label: 'RDC' }
 ])
 
+const rooms = ref<Room[]>([
+  { id: 1, label: 'Living Room', floorId: '1' },
+  { id: 2, label: 'Kitchen', floorId: '1' }
+])
+
+const components = ref<ComponentContract[]>([
+  { id: 1, label: 'Front Door', type: ComponentTypes.DOOR, status: StatusTypes.ACTIVE, roomId: '1', floorId: '1' },
+  { id: 2, label: 'Living Room Window', type: ComponentTypes.WINDOW, status: StatusTypes.ACTIVE, roomId: '1', floorId: '1' },
+  { id: 3, label: 'Kitchen Door', type: ComponentTypes.DOOR, status: StatusTypes.ACTIVE, roomId: '1', floorId: '1' },
+])
+
+
 // Form states
-const newComponent = ref({
-  name: '',
+const newComponent = ref<ComponentContract>({
+  id: '',
+  label: '',
   type: '',
-  status: 'active',
+  status: StatusTypes.ACTIVE,
   floorId: '',
   roomId: ''
 })
 
 const newRoom = ref({
-  name: '',
+  label: '',
   floorId: ''
 })
 
 const newFloor = ref({
-  name: ''
+  label: ''
 })
 
 // Computed properties
-const componentTypes = [
-  { value: 'door', label: t('components.types.door') },
-  { value: 'window', label: t('components.types.window') },
-  { value: 'floor', label: t('components.types.floor') },
-  { value: 'room', label: t('components.types.room') },
+const componentTypesList = [
+  { value: ComponentTypes.DOOR, label: t('components.types.door') },
+  { value: ComponentTypes.WINDOW, label: t('components.types.window') },
+  { value: ComponentTypes.FLOOR, label: t('components.types.floor') },
+  { value: ComponentTypes.ROOM, label: t('components.types.room') },
 ]
 
 const showFloorSelect = computed(() => {
@@ -57,22 +95,27 @@ const showFloorSelect = computed(() => {
 })
 
 const showRoomSelect = computed(() => {
-  return ['door', 'window'].includes(newComponent.value.type)
+  let _type = newComponent.value.type;
+  if (! _type) {
+    return false
+  }
+  return [ComponentTypes.DOOR, ComponentTypes.WINDOW].includes(_type as ComponentTypes)
 })
 
 const availableRooms = computed(() => {
   if (!newComponent.value.floorId) return []
   return rooms.value
-    .filter(room => room.floorId === Number(newComponent.value.floorId))
-    .map(room => ({ value: room.id.toString(), label: room.name }))
+    .filter(room => room.floorId === newComponent.value.floorId)
+    .map(room => ({ value: room.id.toString(), label: room.label }))
 })
 
 const floorOptions = computed(() => {
   return floors.value.map(floor => ({
     value: floor.id.toString(),
-    label: floor.name
+    label: floor.label
   }))
 })
+
 
 // Modal handlers
 const openModal = () => {
@@ -105,9 +148,10 @@ const closeFloorModal = () => {
 // Form resets
 const resetForm = () => {
   newComponent.value = {
-    name: '',
+    id: '',
+    label: '',
     type: '',
-    status: 'active',
+    status: StatusTypes.ACTIVE,
     floorId: '',
     roomId: ''
   }
@@ -115,25 +159,29 @@ const resetForm = () => {
 
 const resetRoomForm = () => {
   newRoom.value = {
-    name: '',
+    label: '',
     floorId: floors.value[0].id.toString()
   }
 }
 
 const resetFloorForm = () => {
   newFloor.value = {
-    name: ''
+    label: ''
   }
 }
 
 // Form submissions
 const handleSubmit = () => {
+  let _type = newComponent.value.type;
+  if (! _type) {
+    return;
+  }
   // Here you would typically make an API call to save the component
   components.value.push({
-    id: components.value.length + 1,
     ...newComponent.value,
-    floorId: newComponent.value.type === 'floor' ? Number(newComponent.value.floorId) : undefined,
-    roomId: ['door', 'window'].includes(newComponent.value.type) ? Number(newComponent.value.roomId) : undefined
+    // id: components.value.length + 1,
+    floorId: newComponent.value.type === ComponentTypes.FLOOR ? newComponent.value.floorId : '1',
+    roomId: [ComponentTypes.DOOR, ComponentTypes.WINDOW].includes(_type as ComponentTypes) ? newComponent.value.roomId : '1'
   })
   closeModal()
 }
@@ -141,8 +189,8 @@ const handleSubmit = () => {
 const handleRoomSubmit = () => {
   rooms.value.push({
     id: rooms.value.length + 1,
-    name: newRoom.value.name,
-    floorId: Number(newRoom.value.floorId)
+    label: newRoom.value.label,
+    floorId: newRoom.value.floorId
   })
   closeRoomModal()
 }
@@ -150,7 +198,7 @@ const handleRoomSubmit = () => {
 const handleFloorSubmit = () => {
   floors.value.push({
     id: floors.value.length,
-    name: newFloor.value.name
+    label: newFloor.value.label
   })
   closeFloorModal()
 }
@@ -168,10 +216,10 @@ const handleFloorSubmit = () => {
     <div class="components-list">
       <div v-for="component in components" :key="component.id" class="component-card">
         <div class="component-info">
-          <h3>{{ component.name }}</h3>
-          <p>{{ t(`components.types.${component.type}`) }}</p>
-          <span :class="['status-badge', component.status]">
-            {{ t(`components.status.${component.status}`) }}
+          <h3>{{ component.label }}</h3>
+          <p>{{ t(`components.types.${component.type?.toString()}`) }}</p>
+          <span :class="['status-badge', component.status?.toString()]">
+            {{ t(`components.status.${component.status?.toString()}`) }}
           </span>
         </div>
       </div>
@@ -185,15 +233,15 @@ const handleFloorSubmit = () => {
     >
       <form @submit.prevent="handleSubmit" class="component-form">
         <AppInput
-          v-model="newComponent.name"
-          :label="t('components.form.name')"
+          v-model="newComponent.label"
+          :label="t('components.form.label')"
           required
         />
 
         <AppSelect
           v-model="newComponent.type"
           :label="t('components.form.type')"
-          :options="componentTypes"
+          :options="componentTypesList"
           required
         />
 
@@ -240,7 +288,7 @@ const handleFloorSubmit = () => {
     >
       <form @submit.prevent="handleRoomSubmit" class="component-form">
         <AppInput
-          v-model="newRoom.name"
+          v-model="newRoom.label"
           :label="t('components.form.room_name')"
           required
         />
@@ -271,7 +319,7 @@ const handleFloorSubmit = () => {
     >
       <form @submit.prevent="handleFloorSubmit" class="component-form">
         <AppInput
-          v-model="newFloor.name"
+          v-model="newFloor.label"
           :label="t('components.form.floor_name')"
           required
         />
@@ -380,4 +428,4 @@ const handleFloorSubmit = () => {
     gap: var(--space-4);
   }
 }
-</style> 
+</style>
