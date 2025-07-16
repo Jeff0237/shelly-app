@@ -1,0 +1,94 @@
+version: '3.8'
+
+services:
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    environment:
+      - REACT_APP_API_URL=https://api.shellydashboard.com
+      - NODE_ENV=development
+      - VITE_PORT=${VITE_PORT:-3000}
+    ports:
+      - "${VITE_PORT:-3000}:${VITE_PORT:-3000}"
+    command: npm run dev -- --host 0.0.0.0 --port ${VITE_PORT:-3000} 
+    volumes:
+      - ./frontend/src:/app/src
+    depends_on:
+      - backend
+    networks:
+      - shelly-network
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    ports:
+      - "9009:9000"
+    environment:
+      - PORT=9000
+      - MONGODB_URI=mongodb://admin:adminpassword@mongodb:27017/shellydb?authSource=admin
+      - JWT_SECRET=jwt
+      - CORS_ORIGIN=https://shellydashboard.com
+      - MAIL_SERVER=maildev
+      - MAIL_PORT=1025
+      - MAIL_USE_TLS=false
+      - MAIL_USE_SSL=false
+      - MAIL_USERNAME=
+      - MAIL_PASSWORD=
+      - FLASK_ENV=development
+      - FLASK_DEBUG=1
+    volumes:
+      - ./backend/src:/app/src
+      - ./backend/requirements.txt:/app/requirements.txt
+    command: flask run --host=0.0.0.0 --port=9000
+    depends_on:
+      - mongodb
+      - maildev
+    networks:
+      - shelly-network
+
+  mongodb:
+    image: mongo:latest
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data:/data/db
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=admin
+      - MONGO_INITDB_ROOT_PASSWORD=adminpassword
+      - MONGO_INITDB_DATABASE=shellydb
+    command: mongod --auth
+    networks:
+      - shelly-network
+
+  mongo-express:
+    image: mongo-express:latest
+    ports:
+      - "8888:8081"
+    environment:
+      - ME_CONFIG_MONGODB_ADMINUSERNAME=admin
+      - ME_CONFIG_MONGODB_ADMINPASSWORD=adminpassword
+      - ME_CONFIG_MONGODB_SERVER=mongodb
+      - ME_CONFIG_BASICAUTH_USERNAME=admin
+      - ME_CONFIG_BASICAUTH_PASSWORD=adminpassword
+    depends_on:
+      - mongodb
+    networks:
+      - shelly-network
+
+  maildev:
+    image: maildev/maildev
+    ports:
+      - "1080:1080"  # Web interface
+      - "1025:1025"  # SMTP server
+    networks:
+      - shelly-network
+
+volumes:
+  mongodb_data:
+
+networks:
+  shelly-network:
+    driver: bridge
+
