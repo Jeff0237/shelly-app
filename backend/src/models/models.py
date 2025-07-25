@@ -20,18 +20,6 @@ def create_models(api):
         'updated_at': fields.DateTime(description='Last update timestamp')
     })
 
-    # Component Model
-    component_model = api.model('Component', {
-        'id': fields.String(required=True, description='Component ID'),
-        'name': fields.String(required=True, description='Component name'),
-        'type': fields.String(required=True, description='Component type'),
-        'status': fields.String(description='Component status'),
-        'location': fields.String(description='Component location'),
-        'last_seen': fields.DateTime(description='Last seen timestamp'),
-        'created_at': fields.DateTime(description='Creation timestamp'),
-        'updated_at': fields.DateTime(description='Last update timestamp')
-    })
-
     device_model = api.model('Device', {
         '_id': fields.String(readonly=True, description='The unique identifier of a device'),
         'id': fields.String(required=True, description='Device ID from Shelly Cloud'),
@@ -47,7 +35,9 @@ def create_models(api):
     settings_model = api.model('Settings', {
         'userLink': fields.String(required=True, description='User link for Shelly Cloud API', example='https://shelly-176-eu.shelly.cloud/interface/device/list'),
         'apiKey': fields.String(required=True, description='API key for Shelly Cloud API', example='MzA4...'),
+        'user_id': fields.String(required=True, description='The user this device belongs to'),
         'jwt': fields.String(description='JWT token for Shelly Cloud WebSocket'),
+        'oauth_state': fields.String(description='Oauth state for Shelly Cloud WebSocket'),
         'created_at': fields.DateTime(description='Creation timestamp'),
         'updated_at': fields.DateTime(description='Last update timestamp'),
     })
@@ -102,7 +92,6 @@ def create_models(api):
 
     return {
         'user': user_model,
-        'component': component_model,
         'device': device_model,
         'settings': settings_model,
         'password_reset': password_reset_model,
@@ -120,5 +109,5 @@ class Collections:
     USERS = 'users'
     PASSWORD_RESETS = 'password_resets'
     SETTINGS = 'settings'
-    COMPONENTS = 'components'
     DEVICES = 'devices' 
+

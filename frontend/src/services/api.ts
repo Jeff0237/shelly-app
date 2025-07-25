@@ -5,6 +5,7 @@ export interface UserSettings {
   apiKey: string;
 }
 
+// const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:9000';
 const API_URL = import.meta.env.VITE_API_URL || 'https://api.shellydashboard.com';
 
 const api = axios.create({

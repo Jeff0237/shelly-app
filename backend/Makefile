@@ -1,9 +1,9 @@
 PYTHON=python3
 VENV_DIR=venv
-APP_MODULE=main:app
+APP_MODULE=app:app
 GUNICORN=$(VENV_DIR)/bin/gunicorn
 LOG=gunicorn.log
-PORT=9000
+PORT=9009
 
 .PHONY: all init install run stop clean
 

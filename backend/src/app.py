@@ -1106,6 +1106,7 @@ class ShellyOAuthURL(Resource):
             # Use the current user's JWT as the identifier in the callback URL
             access_token = request.headers.get('Authorization', '').replace('Bearer ', '')
             # Build the redirect_uri with the JWT
+            # redirect_uri = f"http://localhost:9000/api/webhook/oauth"
             redirect_uri = f"https://api.shellydashboard.com/api/webhook/oauth"
             oauth_url = f"https://my.shelly.cloud/oauth_login.html?client_id=shelly-diy&redirect_uri={redirect_uri}&state={state}"
             # Store state in settings for later verification

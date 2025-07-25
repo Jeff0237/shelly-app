@@ -65,9 +65,8 @@ const connectShellyCloud = async () => {
   message.value = { type: '', text: '' }
   try {
     const response = await settingsService.connectShelly();
+    // let newUrl = response.oauth_url.replace("http://localhost:9000/api/webhook/oauth", "https//localhost:5173/oauth/callback");
     let newUrl = response.oauth_url.replace("https://api.shellydashboard.com/api/webhook/oauth", "https://shellydashboard.com/oauth/callback");
-    // let newUrl = response.oauth_url.replace("https://api.shellydashboard.com/api/webhook/oauth", "http://localhost:3000/oauth/callback");
-//    https://my.shelly.cloud/oauth_login.html?client_id=shelly-diy&redirect_uri=https://api.shellydashboard.com/api/webhook/oauth&state=ugtj1qFBDExl2SwIoUCZCn0C4lG5S68b
 
     window.location.href = newUrl ?? '/';
   } catch (error) {
@@ -229,7 +228,7 @@ onUnmounted(() => {
     <p class="mb-2">{{ t('settings.helpKeyPurpose') }}</p>
     <p class="mb-2">
       {{ t('settings.helpMoreInfo') }}
-      <a href="https://shelly-api-docs.shelly.cloud/cloud-control-api/" target="_blank" class="text-blue-600 underline">{{ t('settings.helpMoreInfo2') }}</a>.
+      <a href="https://shelly-api-docs.shelly.cloud/cloud-control-api/" target="_blank" class="text-blue-600 underline" v-html="t('settings.helpMoreInfo2')"></a>.
     </p>
     <p class="mb-2"><span class="font-bold">{{ t('settings.note') }}</span> {{ t('settings.helpNote') }}</p>
     <div class="bg-gray-100 dark:bg-gray-800 rounded p-3 text-xs mt-2">

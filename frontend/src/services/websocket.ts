@@ -31,6 +31,7 @@ class WebSocketService {
     }
 
     this.token = token || localStorage.getItem('access_token');
+    // const API_URL = import.meta.env.VITE_API_URL || 'http:/localhost:9000';
     const API_URL = import.meta.env.VITE_API_URL || 'https://api.shellydashboard.com';
     
     this.socket = io(API_URL);
