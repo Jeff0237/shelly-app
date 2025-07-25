@@ -1,6 +1,6 @@
 PYTHON=python3
 VENV_DIR=venv
-APP_MODULE=app:app
+APP_MODULE=src.app:app
 GUNICORN=$(VENV_DIR)/bin/gunicorn
 LOG=gunicorn.log
 PORT=9009
